@@ -116,13 +116,18 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`🚀 Webhook server running on port ${PORT}`);
-  console.log(`📱 Ready to receive TradingView alerts and forward to Telegram`);
+// Start the server (only in local development, not on Vercel)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Webhook server running on port ${PORT}`);
+    console.log(`📱 Ready to receive TradingView alerts and forward to Telegram`);
 
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-    console.warn('⚠️  WARNING: Telegram credentials not set!');
-    console.warn('   Please set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID environment variables');
-  }
-});
+    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+      console.warn('⚠️  WARNING: Telegram credentials not set!');
+      console.warn('   Please set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID environment variables');
+    }
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;
